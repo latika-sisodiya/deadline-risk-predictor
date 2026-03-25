@@ -58,9 +58,20 @@ export default function Home() {
       />
 
       {result && (
-        <div className="grid gap-4 mt-6">
-          <RiskGauge risk={result.risk} />
-          <CountdownCard deadline={form.deadline} />
+        <div className="mt-6 space-y-4">
+          <div>
+            <h3>Recovery Plan</h3>
+            {result.recoveryPlan?.map((r: string, i: number) => (
+              <p key={i}>{r}</p>
+            ))}
+          </div>
+
+          <div>
+            <h3>Daily Plan</h3>
+            {result.dailyPlan?.map((r: string, i: number) => (
+              <p key={i}>{r}</p>
+            ))}
+          </div>
         </div>
       )}
     </main>
