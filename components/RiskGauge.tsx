@@ -2,7 +2,6 @@
 
 type Props = {
   risk: "low" | "medium" | "high";
-  score: number;
 };
 
 const riskConfig = {
@@ -32,7 +31,7 @@ const riskConfig = {
   },
 };
 
-export default function RiskGauge({ risk, score }: Props) {
+export default function RiskGauge({ risk }: Props) {
   const config = riskConfig[risk];
   const riskPercent = { low: 25, medium: 60, high: 90 };
   const percent = riskPercent[risk];

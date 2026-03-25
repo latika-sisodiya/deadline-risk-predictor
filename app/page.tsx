@@ -161,7 +161,7 @@ export default function Home() {
             </h1>
             <p className="mt-4 max-w-md text-sm text-slate-500 leading-relaxed">
               Powered by Groq AI — estimate your deadline risk and get a
-              personalised recovery plan before it's too late.
+              personalised recovery plan before it&apos;s too late.
             </p>
           </div>
 
