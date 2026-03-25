@@ -34,7 +34,8 @@ const riskConfig = {
 
 export default function RiskGauge({ risk, score }: Props) {
   const config = riskConfig[risk];
-  const percent = Math.round(score * 100);
+  const riskPercent = { low: 25, medium: 60, high: 90 };
+  const percent = riskPercent[risk];
 
   const size = 160;
   const cx = size / 2;
