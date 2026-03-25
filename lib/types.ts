@@ -17,3 +17,10 @@ export type AnalyzeResponse = {
   dailyPlan: string[];
   urgencyLabel: string;
 };
+
+export type HistoryEntry = {
+  id: string;
+  timestamp: number;
+  form: AnalyzeRequest;
+  result: AnalyzeResponse;
+};

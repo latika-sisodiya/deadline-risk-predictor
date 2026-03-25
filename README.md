@@ -1,36 +1,161 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Deadline Risk Predictor
 
-## Getting Started
+> AI-powered deadline risk estimation for Lancaster University students.
 
-First, run the development server:
+Built with **Next.js 14**, **TypeScript**, **Tailwind CSS**, and **Groq AI** (llama-3.3-70b-versatile). Enter your assignment details and get an instant risk assessment, recovery plan, and live countdown — before it's too late.
+
+---
+
+## Screenshot
+
+![Screenshot](public/screenshot.png)
+
+---
+
+## What it does
+
+Students enter details about an upcoming assignment — title, deadline, current progress, difficulty, confidence level, and estimated hours remaining. The app sends this to Groq's Llama model, which returns:
+
+- A **risk level** (low / medium / high) with a confidence score
+- A short **reason** explaining the primary risk factor
+- A **3-step recovery plan** with actionable items
+- A **daily study plan** with time-blocked steps
+- A live **countdown timer** to the deadline
+- A **progress vs. time bar** showing whether work is keeping pace
+
+All results are saved locally so you can compare previous analyses.
+
+---
+
+## Tech stack
+
+| Layer      | Technology                        |
+| ---------- | --------------------------------- |
+| Framework  | Next.js 14 (App Router)           |
+| Language   | TypeScript                        |
+| Styling    | Tailwind CSS + DM Sans font       |
+| AI model   | Groq — `llama-3.3-70b-versatile`  |
+| AI SDK     | `groq-sdk`                        |
+| State      | React `useState` + `localStorage` |
+| Deployment | Vercel (recommended)              |
+
+---
+
+## Getting started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/latika-sisodiya/deadline-risk-predictor.git
+cd deadline-risk-predictor
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Get a Groq API key
+
+1. Go to [console.groq.com](https://console.groq.com)
+2. Sign up or log in
+3. Navigate to **API Keys** and create a new key
+
+### 4. Set up environment variables
+
+Create a `.env.local` file in the root of the project:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+> ⚠️ Never commit `.env.local` to GitHub. It is already in `.gitignore`.
+
+### 5. Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+```
+deadline-risk-predictor/
+├── app/
+│   ├── api/
+│   │   └── analyze/
+│   │       └── route.ts        # Groq API route with validation
+│   ├── globals.css              # Fonts, animations, base styles
+│   ├── layout.tsx              # Root layout and metadata
+│   └── page.tsx                # Main page with state and layout
+│
+├── components/
+│   ├── InputPanel.tsx          # Form with sliders, toggles, presets
+│   ├── ResultPanel.tsx         # Result layout and copy button
+│   ├── RiskGauge.tsx           # Animated SVG arc gauge
+│   ├── CountdownCard.tsx       # Live-ticking countdown timer
+│   ├── ProgressTimeBar.tsx     # Progress vs time dual bar
+│   ├── RecoveryPlanCard.tsx    # Numbered step plan cards
+│   └── StatCard.tsx            # Small stat display card
+│
+├── lib/
+│   └── types.ts                # Shared TypeScript types
+│
+├── .env.local                  # Your API key (not committed)
+├── .gitignore
+├── next.config.js
+├── tailwind.config.ts
+└── README.md
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How AI is used
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app sends a structured prompt to Groq's `llama-3.3-70b-versatile` model via the `/api/analyze` route. The prompt includes all six assignment fields plus a calculated `hoursUntilDeadline` value derived from the deadline date.
 
-## Deploy on Vercel
+The model is instructed via a system message to respond with **JSON only** — no markdown, no explanation. A JSON extraction function strips any accidental formatting before parsing.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Key prompt logic:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- If `hoursLeft > hoursUntilDeadline`, the model is told this is a **critical risk signal**
+- Low progress + hard difficulty + low confidence is flagged as high risk
+- Temperature is set to `0.4` for consistent, focused outputs
+- `max_tokens` is capped at `600` to prevent runaway responses
+
+---
+
+## Features
+
+- **Animated risk gauge** — SVG arc sweeps in on load, colour-coded by risk level
+- **Live countdown** — ticks every second, turns amber under 12h, red under 4h
+- **Sliders** for progress, confidence, and hours (replaces raw number inputs)
+- **Difficulty toggle** — Easy / Medium / Hard with colour-coded buttons
+- **Quick-fill presets** — Essay crisis, Group project, Comfortable scenarios
+- **Progress vs. time bar** — shows if your work is keeping pace with time elapsed
+- **Analysis history** — last 5 analyses saved in `localStorage`, reloadable
+- **Copy recovery plan** — copies formatted plan to clipboard
+- **Skeleton loading** — card outlines appear while AI is thinking
+- **Input validation** — submit button disabled until title and deadline are filled
+- **15-second timeout** — AbortController cancels hung requests cleanly
+- **API validation** — server rejects malformed requests before touching Groq
+
+---
+
+## Limitations
+
+- Analysis quality depends on the accuracy of the inputs — estimated hours remaining is self-reported
+- `localStorage` history is browser-specific and clears if storage is wiped
+- Groq free tier has rate limits — avoid rapid repeated submissions
+- The countdown timer uses the client's local system clock
+
+---
+
+## Licence
+
+MIT — free to use, modify, and distribute.
