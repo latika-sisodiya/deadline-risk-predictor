@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import InputPanel from "@/components/InputPanel";
-
+import RiskGauge from "@/components/RiskGauge";
+import CountdownCard from "@/components/CountdownCard";
 import { AnalyzeRequest } from "@/lib/types";
 
 export default function Home() {
@@ -57,9 +58,10 @@ export default function Home() {
       />
 
       {result && (
-        <pre className="mt-6 bg-black p-4 rounded">
-          {JSON.stringify(result, null, 2)}
-        </pre>
+        <div className="grid gap-4 mt-6">
+          <RiskGauge risk={result.risk} />
+          <CountdownCard deadline={form.deadline} />
+        </div>
       )}
     </main>
   );
