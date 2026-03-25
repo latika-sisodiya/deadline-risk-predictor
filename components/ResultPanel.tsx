@@ -43,7 +43,7 @@ export default function ResultPanel({
   return (
     <div className="grid gap-5">
       <div className="grid gap-5 lg:grid-cols-2">
-        <RiskGauge risk={result.risk} score={result.confidenceScore} />
+        <RiskGauge risk={result.risk} />
         <CountdownCard deadline={deadline} />
       </div>
 
